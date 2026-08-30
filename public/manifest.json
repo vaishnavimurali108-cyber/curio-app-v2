@@ -1,0 +1,11 @@
+{
+  "name": "Curio — Curated Experiences",
+  "short_name": "Curio",
+  "description": "Museum tours, lecdems, walking tours and exclusive roundtables — curated, not just listed.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1b2430",
+  "theme_color": "#1b2430",
+  "orientation": "portrait",
+  "icons": []
+}

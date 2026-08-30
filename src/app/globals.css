@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #14181f;
+  --navy: #1b2430;
+  --navy-soft: #232e3d;
+  --parchment: #f2ecd9;
+  --parchment-dim: #e9e0c6;
+  --brass: #b98a3d;
+  --brass-dark: #8f6a2c;
+  --teal: #2f4538;
+  --stamp: #a23e2f;
+  --line: #d8cdaa;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-navy: var(--navy);
+  --color-navy-soft: var(--navy-soft);
+  --color-parchment: var(--parchment);
+  --color-parchment-dim: var(--parchment-dim);
+  --color-brass: var(--brass);
+  --color-brass-dark: var(--brass-dark);
+  --color-teal: var(--teal);
+  --color-stamp: var(--stamp);
+  --color-line: var(--line);
+  --font-display: var(--font-fraunces);
+  --font-body: var(--font-inter);
+  --font-mono: var(--font-plex-mono);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  background: var(--navy);
+}
+
+body {
+  background: var(--parchment);
+  color: var(--ink);
+  font-family: var(--font-body), sans-serif;
+  overscroll-behavior-y: none;
+}
+
+/* Perforated ticket edge — the signature motif */
+.ticket-perforation {
+  position: relative;
+}
+.ticket-perforation::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 96px;
+  height: 0;
+  border-top: 2px dashed var(--line);
+}
+.ticket-notch-l,
+.ticket-notch-r {
+  position: absolute;
+  top: 88px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--parchment);
+  border: 1px solid var(--line);
+}
+.ticket-notch-l {
+  left: -9px;
+}
+.ticket-notch-r {
+  right: -9px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+}
+
+/* hide scrollbar for horizontal chip rows, keep functionality */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Gentle rise-in for cards as they appear, staggered via --delay */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-rise {
+  animation: rise-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+/* The "admit one" stamp thumping down on confirmation — the payoff moment */
+@keyframes stamp-in {
+  0% { opacity: 0; transform: scale(2.2) rotate(-14deg); }
+  60% { opacity: 1; transform: scale(0.92) rotate(-8deg); }
+  80% { transform: scale(1.04) rotate(-10deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-10deg); }
+}
+.animate-stamp {
+  animation: stamp-in 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+/* Soft breathing glow for the concierge's sparkle while it "thinks" */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+.animate-glow {
+  animation: glow-pulse 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise, .animate-stamp, .animate-glow {
+    animation: none !important;
+  }
+}
