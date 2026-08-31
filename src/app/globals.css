@@ -42,6 +42,26 @@ body {
   color: var(--ink);
   font-family: var(--font-body), sans-serif;
   overscroll-behavior-y: none;
+  /* Faint paper grain — small dots on a slightly darker parchment tone,
+     so surfaces read as textured stock rather than a flat website fill. */
+  background-image: radial-gradient(
+    rgba(27, 36, 48, 0.05) 0.6px,
+    transparent 0.6px
+  );
+  background-size: 10px 10px;
+}
+
+.surface-card {
+  background-color: var(--parchment);
+}
+
+/* A darker grain variant for navy sections, same idea, lighter dots */
+.grain-navy {
+  background-image: radial-gradient(
+    rgba(242, 236, 217, 0.06) 0.6px,
+    transparent 0.6px
+  );
+  background-size: 10px 10px;
 }
 
 /* Perforated ticket edge — the signature motif */
@@ -120,8 +140,27 @@ body {
   animation: glow-pulse 1.4s ease-in-out infinite;
 }
 
+/* Slow, ambient drift for the format-icon watermark on ticket headers */
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) rotate(-6deg); }
+  50% { transform: translate(2px, -3px) rotate(-3deg); }
+}
+.animate-drift {
+  animation: drift 6s ease-in-out infinite;
+}
+
+/* Underline that draws itself in under the hero heading */
+@keyframes draw-underline {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.animate-draw {
+  transform-origin: left;
+  animation: draw-underline 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .animate-rise, .animate-stamp, .animate-glow {
+  .animate-rise, .animate-stamp, .animate-glow, .animate-drift, .animate-draw {
     animation: none !important;
   }
 }
