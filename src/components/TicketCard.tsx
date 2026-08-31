@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MapPin, Clock } from "lucide-react";
 import type { Experience } from "@/lib/types";
 import { formatPrice, ticketCode } from "@/lib/utils";
+import { FormatIcon } from "@/components/FormatIcon";
 
 const FORMAT_LABEL: Record<string, string> = {
   "Museum Tour": "Museum Tour",
@@ -35,7 +36,11 @@ export function TicketCard({
         <span className="ticket-notch-r" aria-hidden />
 
         {/* Stub header */}
-        <div className="flex items-center justify-between bg-navy px-4 py-3 text-parchment">
+        <div className="relative flex items-center justify-between overflow-hidden bg-navy px-4 py-3 text-parchment">
+          <FormatIcon
+            format={exp.format}
+            className="animate-drift pointer-events-none absolute -right-2 -top-2 h-20 w-20 text-parchment/[0.07]"
+          />
           <div className="flex items-baseline gap-2">
             <span className="font-display text-2xl leading-none">{day}</span>
             <span className="font-mono text-[11px] uppercase tracking-wider text-parchment/70">
@@ -56,7 +61,8 @@ export function TicketCard({
 
         {/* Body */}
         <div className="px-4 pb-4 pt-6">
-          <p className="font-mono text-[10px] uppercase tracking-wider text-brass-dark">
+          <p className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-brass-dark">
+            <FormatIcon format={exp.format} className="h-3.5 w-3.5" />
             {FORMAT_LABEL[exp.format] ?? exp.format} · {exp.category}
           </p>
           <h3 className="mt-1 font-display text-xl leading-snug text-ink">
