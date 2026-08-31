@@ -2,11 +2,13 @@
 
 import { useEffect, useState, use as usePromise } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin, Clock, CalendarDays, Check } from "lucide-react";
+import { MapPin, Clock, CalendarDays, Check, RotateCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/context/auth-context";
 import type { Experience } from "@/lib/types";
 import { formatPrice, ticketCode } from "@/lib/utils";
+import { ConfettiBurst } from "@/components/ConfettiBurst";
+import { Barcode } from "@/components/Barcode";
 
 export default function ExperienceDetailPage({
   params,
@@ -24,6 +26,8 @@ export default function ExperienceDetailPage({
   const [step, setStep] = useState<"view" | "confirm" | "done">("view");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [justBooked, setJustBooked] = useState(false);
+  const [flipped, setFlipped] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -77,6 +81,7 @@ export default function ExperienceDetailPage({
     }
     setExp({ ...exp, spots_taken: exp.spots_taken + 1 });
     setAlreadyBooked(true);
+    setJustBooked(true);
     setStep("done");
   }
 
@@ -135,22 +140,85 @@ export default function ExperienceDetailPage({
       <div className="my-5 border-t border-dashed border-line" />
 
       {step === "done" ? (
-        <div className="rounded-2xl border border-teal/30 bg-teal/5 p-5 text-center">
-          <div className="animate-stamp mx-auto flex h-14 w-14 items-center justify-center rounded-full border-4 border-teal text-teal">
-            <Check size={26} strokeWidth={3} />
+        <div>
+          <div className="relative overflow-hidden rounded-2xl border border-teal/30 bg-teal/5 p-5 text-center">
+            {justBooked && <ConfettiBurst />}
+            <div className="animate-stamp mx-auto flex h-14 w-14 items-center justify-center rounded-full border-4 border-teal text-teal">
+              <Check size={26} strokeWidth={3} />
+            </div>
+            <p className="mt-3 font-display text-lg text-teal">
+              {alreadyBooked ? "You're going." : "Reserved."}
+            </p>
+            <p className="mt-1 font-mono text-xs uppercase tracking-wider text-ink/50">
+              Ticket #{ticketCode(exp.id)}
+            </p>
+            <button
+              onClick={() => router.push("/bookings")}
+              className="mt-4 rounded-lg bg-navy px-4 py-2 font-mono text-[11px] uppercase tracking-wider text-parchment"
+            >
+              View my tickets
+            </button>
           </div>
-          <p className="mt-3 font-display text-lg text-teal">
-            {alreadyBooked ? "You're going." : "Reserved."}
-          </p>
-          <p className="mt-1 font-mono text-xs uppercase tracking-wider text-ink/50">
-            Ticket #{ticketCode(exp.id)}
-          </p>
-          <button
-            onClick={() => router.push("/bookings")}
-            className="mt-4 rounded-lg bg-navy px-4 py-2 font-mono text-[11px] uppercase tracking-wider text-parchment"
-          >
-            View my tickets
-          </button>
+
+          {/* Flip-able physical ticket */}
+          <div className="mt-4">
+            <button
+              onClick={() => setFlipped((f) => !f)}
+              className="mx-auto mb-3 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-brass-dark"
+            >
+              <RotateCw size={13} />
+              {flipped ? "Show front" : "Flip ticket"}
+            </button>
+
+            <div className="flip-scene mx-auto h-48 max-w-sm">
+              <div
+                className={`flip-card h-full w-full ${
+                  flipped ? "is-flipped" : ""
+                }`}
+              >
+                {/* Front */}
+                <div className="flip-face absolute inset-0 flex flex-col justify-between rounded-2xl border border-line bg-white p-4 shadow-sm">
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-brass-dark">
+                      {exp.format}
+                    </p>
+                    <p className="mt-1 font-display text-lg leading-snug text-navy">
+                      {exp.title}
+                    </p>
+                  </div>
+                  <div className="flex items-end justify-between">
+                    <span className="font-mono text-[11px] text-ink/50">
+                      {date.toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}{" "}
+                      · {exp.event_time}
+                    </span>
+                    <span className="font-display text-teal">
+                      {formatPrice(exp.price)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Back — boarding-pass style */}
+                <div className="flip-face flip-face-back flex flex-col items-center justify-center gap-3 rounded-2xl border border-line bg-navy p-4 text-parchment shadow-sm">
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-parchment/50">
+                    Admit One · Curio
+                  </p>
+                  <p className="font-mono text-sm tracking-[0.3em] text-brass">
+                    {ticketCode(exp.id)}
+                  </p>
+                  <Barcode
+                    code={ticketCode(exp.id)}
+                    className="h-10 text-parchment/80"
+                  />
+                  <p className="text-[10px] text-parchment/40">
+                    Present this at check-in
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       ) : step === "confirm" ? (
         <div className="rounded-2xl border border-line bg-white p-5">
